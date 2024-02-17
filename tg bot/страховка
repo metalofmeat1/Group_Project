@@ -1,0 +1,42 @@
+import sqlite3
+
+import telebot
+from telebot import types
+
+
+def create_connection():
+    conn = sqlite3.connect('photos.db')
+    return conn
+
+
+bot = telebot.TeleBot('6737030486:AAGfBByb1-ZjGmnqPwakojObkftgG9jnkX0')
+
+
+@bot.message_handler(commands=['start'])
+def handle_start(message):
+    bot.send_message(message.chat.id,'Французький бренд розпродує останні сумки минулого сезону підпільно так як вони не можуть продавати в відкриту, так дешево')
+    keyboard = types.InlineKeyboardMarkup(row_width=3)
+    yellow_button = types.InlineKeyboardButton(text="Жовтий", callback_data="2")
+    pink_button = types.InlineKeyboardButton(text="Рожевий", callback_data="1")
+    red_button = types.InlineKeyboardButton(text="Червоний", callback_data="3")
+    keyboard.add(yellow_button, pink_button, red_button)
+
+    bot.send_message(message.chat.id, 'Виберіть колір сумки:', reply_markup=keyboard)
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def handle_callback(call):
+    try:
+        if call.data == '1':
+            bot.send_media_group(call.message.chat.id, [telebot.types.InputMediaPhoto(open('C:/Users/G5/PycharmProjects/MyProjects/photos/1.jpg', 'rb')), telebot.types.InputMediaPhoto(open('C:/Users/G5/PycharmProjects/MyProjects/photos/6.jpg', 'rb'))])
+        elif call.data == '2':
+            bot.send_media_group(call.message.chat.id, [telebot.types.InputMediaPhoto(open('C:/Users/G5/PycharmProjects/MyProjects/photos/3.jpg', 'rb')), telebot.types.InputMediaPhoto(open('C:/Users/G5/PycharmProjects/MyProjects/photos/2.jpg', 'rb'))])
+        elif call.data == '3':
+            bot.send_media_group(call.message.chat.id, [telebot.types.InputMediaPhoto(open('C:/Users/G5/PycharmProjects/MyProjects/photos/4.jpg', 'rb')), telebot.types.InputMediaPhoto(open('C:/Users/G5/PycharmProjects/MyProjects/photos/5.jpg', 'rb'))])
+        else:
+            bot.send_message(call.message.chat.id, "Невірний ідентифікатор фото.")
+    except Exception as e:
+        bot.send_message(call.message.chat.id, f"Помилка: {str(e)}")
+
+
+bot.polling(none_stop=True)

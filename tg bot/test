@@ -1,0 +1,43 @@
+import aiogram
+
+bot = telebot.TeleBot('6737030486:AAGfBByb1-ZjGmnqPwakojObkftgG9jnkX0')
+
+photos = {
+    'pink': [
+        'AgACAgIAAxkBAAMdYS-AB5GaNtY93dR9xExB8y9NQ4cAArCsMRs3h6eJS3rUVo65ZxwBAAMCAAN4AAMgBA',
+        'AgACAgIAAxkBAAMfYS-ADIVV10rUwYO0ed5cT0icG38AArOsMRs3h6eJS5lNoV5Rax0BAAMCAAN5AAMgBA',
+    ],
+    'yellow': [
+        'AgACAgIAAxkBAAMeYS-ACpv0UazS3crMj1DfutprQ1EAArSsMRs3h6eJSzCN8xQJdA0BAAMCAAN6AAMgBA',
+        'AgACAgIAAxkBAAMgYS-ADcq9QhtC3SYoXVbQFK2G9WwAAq2sMRs3h6eJSpVwoZl6tx0BAAMCAAN7AAMgBA',
+    ],
+    'red': [
+        'AgACAgIAAxkBAAMiYS-ADufzKuEQNhXawH6CrxLSdE8AArytMRs3h6eJSxO_lXd4aB0BAAMCAAN8AAMgBA',
+        'AgACAgIAAxkBAAMhYS-ADm0hT71hqDzUtkpXUH6XrI8AAq6tMRs3h6eJS_1ET6VtrB0BAAMCAAN9AAMgBA',
+    ]
+}
+
+
+@bot.message_handler(commands=['start'])
+def handle_start(message):
+    bot.send_message(message.chat.id,
+                     'Привіт, Французький бренд розпродує останні сумки минулого сезону підпільно так як вони не можуть продавати в відкриту, так дешево')
+    keyboard = types.InlineKeyboardMarkup(row_width=3)
+    yellow_button = types.InlineKeyboardButton(text="Жовтий", callback_data="yellow")
+    pink_button = types.InlineKeyboardButton(text="Рожевий", callback_data="pink")
+    red_button = types.InlineKeyboardButton(text="Червоний", callback_data="red")
+    keyboard.add(yellow_button, pink_button, red_button)
+
+    bot.send_message(message.chat.id, 'Виберіть колір сумки:', reply_markup=keyboard)
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def handle_callback(call):
+    if call.data in photos:
+        for photo_id in photos[call.data]:
+            bot.send_photo(call.message.chat.id, photo_id)
+
+    bot.send_message(call.message.chat.id, f"Ви обрали колір: {call.data}")
+
+
+bot.polling()
